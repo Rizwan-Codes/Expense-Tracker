@@ -1,12 +1,15 @@
 
-import { useState, } from "react";
+import { useState, useEffect } from "react";
 
 
 
 function App() {
 
   // 1. All States for Inputs and Data
-  const [transactions, setTransactions] = useState([]);
+  const [transactions, setTransactions] = useState(() => {
+    const saved = localStorage.getItem("my_transactions");
+    return saved ? JSON.parse(saved) : [];
+  });
 
   const [title, setTitle] = useState("");
   const [amount, setAmount] = useState("");
@@ -15,7 +18,10 @@ function App() {
 
   const [filterCategory, setFilterCategory] = useState("All");
 
-
+  // LocalStorage 
+  useEffect(() => {
+    localStorage.setItem("my_transactions", JSON.stringify(transactions));
+  }, [transactions]);
 
   // Automated Calculations 
   const income = transactions
