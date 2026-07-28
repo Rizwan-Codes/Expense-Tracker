@@ -1,7 +1,17 @@
 
 import { useState, useEffect } from "react";
-
-
+import {
+  PieChart,
+  Pie,
+  Cell,
+  Tooltip,
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+} from "recharts";
 
 function App() {
 
@@ -33,6 +43,63 @@ function App() {
     .reduce((sum, t) => sum + t.amount, 0);
 
   const balance = income - expense;
+
+  // Pie Chart Data (Expense Categories)
+
+  const expenseChartData = transactions
+    .filter((t) => t.type === "expense")
+    .reduce((acc, curr) => {
+      const existing = acc.find((item) => item.name === curr.category);
+
+      if (existing) {
+        existing.value += curr.amount;
+      } else {
+        acc.push({
+          name: curr.category,
+          value: curr.amount,
+        });
+      }
+
+      return acc;
+    }, []);
+
+  // Monthly Trend Data
+
+  const monthlyData = transactions.reduce((acc, curr) => {
+    const month = new Date(curr.id).toLocaleString("default", {
+      month: "short",
+    });
+
+    let existing = acc.find((item) => item.month === month);
+
+    if (!existing) {
+      existing = {
+        month,
+        income: 0,
+        expense: 0,
+      };
+
+      acc.push(existing);
+    }
+
+    if (curr.type === "income") {
+      existing.income += curr.amount;
+    } else {
+      existing.expense += curr.amount;
+    }
+
+    return acc;
+  }, []);
+
+  const COLORS = [
+    "#3B82F6",
+    "#10B981",
+    "#EF4444",
+    "#F59E0B",
+    "#8B5CF6",
+    "#EC4899",
+  ];
+
 
 
   // Filtered Transactions for History Display
@@ -145,6 +212,82 @@ function App() {
         </button>
       </form>
 
+      <div className="grid md:grid-cols-2 gap-5 mb-6">
+
+        {/* Pie Chart */}
+
+        <div className="bg-white p-4 rounded-xl shadow border">
+          <h2 className="font-bold mb-4">
+            Expense By Category
+          </h2>
+          {expenseChartData.length === 0 ? (
+            <p>No expense data available.</p>
+          ) : (
+            <ResponsiveContainer width="100%" height={300}>
+              <PieChart>
+                <Pie
+                  data={expenseChartData}
+                  dataKey="value"
+                  nameKey="name"
+                  outerRadius={100}
+                  label
+                >
+                  {expenseChartData.map((entry, index) => (
+                    <Cell
+                      key={index}
+                      fill={COLORS[index % COLORS.length]}
+                    />
+                  ))}
+                </Pie>
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: "#ffffff",
+                    border: "1px solid #e5e7eb",
+                    borderRadius: "12px",
+                    padding: "12px",
+                    boxShadow: "0 10px 25px rgba(0,0,0,0.12)",
+                  }}
+                  itemStyle={{
+                    color: "#111827",
+                    fontWeight: "600",
+                    fontSize: "14px",
+                  }}
+                  labelStyle={{
+                    color: "#6b7280",
+                    fontWeight: "700",
+                    marginBottom: "6px",
+                  }}
+                  formatter={(value) => [`Rs. ${value}`, "Amount"]}
+                />
+              </PieChart>
+            </ResponsiveContainer>
+          )}
+        </div>
+
+        {/* Bar Chart */}
+        <div className="bg-white p-4 rounded-xl shadow">
+          <h2 className="font-bold mb-4">
+            Monthly Income vs Expense
+          </h2>
+          <ResponsiveContainer width="100%" height={300}>
+            <BarChart data={monthlyData}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="month" />
+              <YAxis />
+              <Tooltip />
+              <Bar
+                dataKey="income"
+                fill="#10B981"
+              />
+
+              <Bar
+                dataKey="expense"
+                fill="#EF4444"
+              />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
 
       {/*  BOTTOM SECTION: TRANSACTIONS LIST WITH CATEGORY FILTER  */}
       <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-200">
