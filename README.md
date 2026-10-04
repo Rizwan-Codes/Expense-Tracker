@@ -1,4 +1,4 @@
-# Expense Tracker
+# SpendWise - Expense Tracker
 
 A simple, single-component expense tracker built with React. Add income and expenses, see where your money goes, and review your history. All data stays in your browser.
 
