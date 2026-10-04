@@ -28,12 +28,12 @@ function App() {
 
   const [filterCategory, setFilterCategory] = useState("All");
 
-  // LocalStorage 
+  // LocalStorage
   useEffect(() => {
     localStorage.setItem("my_transactions", JSON.stringify(transactions));
   }, [transactions]);
 
-  // Automated Calculations 
+  // Automated Calculations
   const income = transactions
     .filter((t) => t.type === "income")
     .reduce((sum, t) => sum + t.amount, 0);
@@ -45,7 +45,6 @@ function App() {
   const balance = income - expense;
 
   // Pie Chart Data (Expense Categories)
-
   const expenseChartData = transactions
     .filter((t) => t.type === "expense")
     .reduce((acc, curr) => {
@@ -64,7 +63,6 @@ function App() {
     }, []);
 
   // Monthly Trend Data
-
   const monthlyData = transactions.reduce((acc, curr) => {
     const month = new Date(curr.id).toLocaleString("default", {
       month: "short",
@@ -92,15 +90,13 @@ function App() {
   }, []);
 
   const COLORS = [
-    "#3B82F6",
-    "#10B981",
-    "#EF4444",
-    "#F59E0B",
-    "#8B5CF6",
-    "#EC4899",
+    "#0F766E",
+    "#D97706",
+    "#BE123C",
+    "#4F46E5",
+    "#65A30D",
+    "#78716C",
   ];
-
-
 
   // Filtered Transactions for History Display
   const displayedTransactions =
@@ -108,8 +104,7 @@ function App() {
       ? transactions
       : transactions.filter((t) => t.category === filterCategory);
 
-
-  //  Add Transaction Function
+  // Add Transaction Function
   const handleAddTransaction = (e) => {
     e.preventDefault();
 
@@ -137,227 +132,306 @@ function App() {
     setTransactions(updatedTransactions);
   };
 
+  // UI-only helper classes
+  const inputClass =
+    "w-full rounded-lg border border-stone-300 bg-white px-3 py-2.5 text-sm text-stone-800 placeholder-stone-400 focus:border-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-700/20";
+
+  const labelClass = "mb-1.5 block text-sm font-medium text-stone-600";
+
   return (
-    <div className="max-w-7xl mx-auto p-4 bg-gray-50 min-h-screen font-sans">
-      <h1 className="text-center font-bold text-3xl mb-6 text-gray-800">
-        Expense Tracker
-      </h1>
+    <div className="min-h-screen bg-stone-100 font-sans text-stone-800">
+      <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
 
-      {/*  TOP SECTION: DASHBOARD  */}
-      <div className="grid grid-cols-3 gap-2 text-center mb-6">
-        <div className="bg-blue-100 p-3 rounded-lg border border-blue-200">
-          <span className="block text-xs font-semibold text-blue-700">BALANCE</span>
-          <span className="text-lg font-bold text-blue-900">Rs. {balance}</span>
-        </div>
-        <div className="bg-green-100 p-3 rounded-lg border border-green-200">
-          <span className="block text-xs font-semibold text-green-700">INCOME</span>
-          <span className="text-lg font-bold text-green-900">Rs. {income}</span>
-        </div>
-        <div className="bg-red-100 p-3 rounded-lg border border-red-200">
-          <span className="block text-xs font-semibold text-red-700">EXPENSE</span>
-          <span className="text-lg font-bold text-red-900">Rs. {expense}</span>
-        </div>
-      </div>
-
-      {/*  MIDDLE SECTION: INPUT FORM  */}
-      <form
-        onSubmit={handleAddTransaction}
-        className="flex flex-col gap-3 bg-white p-4 rounded-xl shadow-sm border border-gray-200 mb-6"
-      >
-        <h2 className="font-bold text-lg text-gray-700">Add New Transaction</h2>
-
-        <input
-          className="border border-gray-300 p-2.5 rounded-lg focus:outline-none focus:border-black text-sm"
-          type="text"
-          placeholder="Transaction Title (e.g., Office Salary, Biryani)"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-        />
-
-        <input
-          className="border border-gray-300 p-2.5 rounded-lg focus:outline-none focus:border-black text-sm"
-          type="number"
-          placeholder="Amount (Rs.)"
-          value={amount}
-          onChange={(e) => setAmount(e.target.value)}
-        />
-
-        <select
-          className="border border-gray-300 p-2.5 rounded-lg focus:outline-none focus:border-black text-sm bg-white"
-          value={type}
-          onChange={(e) => setType(e.target.value)}
-        >
-          <option value="income">Income</option>
-          <option value="expense">Expense</option>
-        </select>
-
-        <select
-          className="border border-gray-300 p-2.5 rounded-lg focus:outline-none focus:border-black text-sm bg-white"
-          value={category}
-          onChange={(e) => setCategory(e.target.value)}
-        >
-          <option value="Salary">Salary</option>
-          <option value="Food">Food</option>
-          <option value="Shopping">Shopping</option>
-          <option value="Transport">Transport</option>
-          <option value="Entertainment">Entertainment</option>
-          <option value="Others">Others</option>
-        </select>
-
-        <button
-          type="submit"
-          className="bg-black text-white p-3 rounded-lg font-semibold hover:bg-gray-800 transition-colors mt-2 text-sm"
-        >
-          Add Transaction
-        </button>
-      </form>
-
-      <div className="grid md:grid-cols-2 gap-5 mb-6">
-
-        {/* Pie Chart */}
-
-        <div className="bg-white p-4 rounded-xl shadow border">
-          <h2 className="font-bold mb-4">
-            Expense By Category
-          </h2>
-          {expenseChartData.length === 0 ? (
-            <p>No expense data available.</p>
-          ) : (
-            <ResponsiveContainer width="100%" height={300}>
-              <PieChart>
-                <Pie
-                  data={expenseChartData}
-                  dataKey="value"
-                  nameKey="name"
-                  outerRadius={100}
-                  label
-                >
-                  {expenseChartData.map((entry, index) => (
-                    <Cell
-                      key={index}
-                      fill={COLORS[index % COLORS.length]}
-                    />
-                  ))}
-                </Pie>
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: "#ffffff",
-                    border: "1px solid #e5e7eb",
-                    borderRadius: "12px",
-                    padding: "12px",
-                    boxShadow: "0 10px 25px rgba(0,0,0,0.12)",
-                  }}
-                  itemStyle={{
-                    color: "#111827",
-                    fontWeight: "600",
-                    fontSize: "14px",
-                  }}
-                  labelStyle={{
-                    color: "#6b7280",
-                    fontWeight: "700",
-                    marginBottom: "6px",
-                  }}
-                  formatter={(value) => [`Rs. ${value}`, "Amount"]}
-                />
-              </PieChart>
-            </ResponsiveContainer>
-          )}
-        </div>
-
-        {/* Bar Chart */}
-        <div className="bg-white p-4 rounded-xl shadow">
-          <h2 className="font-bold mb-4">
-            Monthly Income vs Expense
-          </h2>
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={monthlyData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="month" />
-              <YAxis />
-              <Tooltip />
-              <Bar
-                dataKey="income"
-                fill="#10B981"
-              />
-
-              <Bar
-                dataKey="expense"
-                fill="#EF4444"
-              />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
-      </div>
-
-      {/*  BOTTOM SECTION: TRANSACTIONS LIST WITH CATEGORY FILTER  */}
-      <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-200">
-        {/* Header containing Title & Filter Options */}
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="font-bold text-lg text-gray-700">History</h2>
-
-          {/* Category Dropdown Filter */}
-          <select
-            className="border border-gray-300 px-3 py-1.5 rounded-lg text-xs font-semibold bg-white text-gray-700 focus:outline-none focus:border-black"
-            value={filterCategory}
-            onChange={(e) => setFilterCategory(e.target.value)}
-          >
-            <option value="All">All Categories</option>
-            <option value="Salary">Salary</option>
-            <option value="Food">Food</option>
-            <option value="Shopping">Shopping</option>
-            <option value="Transport">Transport</option>
-            <option value="Entertainment">Entertainment</option>
-            <option value="Others">Others</option>
-          </select>
-        </div>
-
-        {transactions.length === 0 ? (
-          <p className="text-gray-400 text-sm text-center py-4">
-            {filterCategory === "All"
-              ? "There is no Transactions"
-              : `"${filterCategory}" There is no transaction in this category`}
+        {/* HEADER */}
+        <header className="mb-6">
+          <h1 className="text-2xl font-bold tracking-tight text-stone-900 sm:text-3xl">
+            Expense Tracker
+          </h1>
+          <p className="mt-1 text-sm text-stone-500">
+            Apni income aur kharchay ek jagah track karein.
           </p>
-        ) : (
-          <div className="flex flex-col gap-2">
-            {transactions.map((t) => (
-              <div
-                key={t.id}
-                className={`flex items-center justify-between p-3 rounded-lg border text-sm ${t.type === "income"
-                  ? "bg-green-50 border-green-200"
-                  : "bg-red-50 border-red-200"
-                  }`}
-              >
-                <div>
-                  <p className="font-bold text-gray-800">{t.title}</p>
-                  <span className="text-xs text-gray-500 uppercase font-semibold">
-                    {t.category} ({t.type})
-                  </span>
-                </div>
+        </header>
 
-                <div className="flex items-center gap-3">
-                  <span
-                    className={`font-bold ${t.type === "income" ? "text-green-600" : "text-red-600"
-                      }`}
-                  >
-                    {t.type === "income" ? "+" : "-"} Rs. {t.amount}
-                  </span>
-
-                  <button
-                    onClick={() => handleDelete(t.id)}
-                    className="text-gray-400 hover:text-red-600 font-bold px-1 text-base transition-colors"
-                  >
-                    ×
-                  </button>
-                </div>
-              </div>
-            ))}
+        {/* SUMMARY */}
+        <section className="mb-6 grid gap-4 md:grid-cols-3">
+          <div className="rounded-2xl bg-teal-900 p-6 text-white md:col-span-1">
+            <p className="text-sm text-teal-200">Current balance</p>
+            <p
+              className={`mt-2 text-3xl font-bold tabular-nums sm:text-4xl ${balance < 0 ? "text-rose-300" : "text-white"
+                }`}
+            >
+              Rs. {balance}
+            </p>
           </div>
-        )}
+
+          <div className="flex items-center justify-between rounded-2xl border border-stone-200 bg-white p-6">
+            <div>
+              <p className="text-sm text-stone-500">Total income</p>
+              <p className="mt-2 text-2xl font-bold tabular-nums text-teal-700">
+                Rs. {income}
+              </p>
+            </div>
+            <span className="h-10 w-1.5 rounded-full bg-teal-600" />
+          </div>
+
+          <div className="flex items-center justify-between rounded-2xl border border-stone-200 bg-white p-6">
+            <div>
+              <p className="text-sm text-stone-500">Total expense</p>
+              <p className="mt-2 text-2xl font-bold tabular-nums text-rose-700">
+                Rs. {expense}
+              </p>
+            </div>
+            <span className="h-10 w-1.5 rounded-full bg-rose-600" />
+          </div>
+        </section>
+
+        <div className="grid gap-6 lg:grid-cols-3">
+
+          {/* LEFT: FORM */}
+          <form
+            onSubmit={handleAddTransaction}
+            className="h-fit rounded-2xl border border-stone-200 bg-white p-6 lg:sticky lg:top-6"
+          >
+            <h2 className="mb-5 text-lg font-semibold text-stone-900">
+              Add transaction
+            </h2>
+
+            <div className="mb-4">
+              <span className={labelClass}>Type</span>
+              <div className="grid grid-cols-2 gap-1 rounded-lg bg-stone-100 p-1">
+                <button
+                  type="button"
+                  onClick={() => setType("income")}
+                  className={`rounded-md py-2 text-sm font-semibold transition-colors ${type === "income"
+                      ? "bg-teal-700 text-white"
+                      : "text-stone-600 hover:text-stone-900"
+                    }`}
+                >
+                  Income
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setType("expense")}
+                  className={`rounded-md py-2 text-sm font-semibold transition-colors ${type === "expense"
+                      ? "bg-rose-700 text-white"
+                      : "text-stone-600 hover:text-stone-900"
+                    }`}
+                >
+                  Expense
+                </button>
+              </div>
+            </div>
+
+            <div className="mb-4">
+              <label className={labelClass} htmlFor="title">
+                Title
+              </label>
+              <input
+                id="title"
+                className={inputClass}
+                type="text"
+                placeholder="e.g. Office salary, Biryani"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+              />
+            </div>
+
+            <div className="mb-4">
+              <label className={labelClass} htmlFor="amount">
+                Amount (Rs.)
+              </label>
+              <input
+                id="amount"
+                className={inputClass}
+                type="number"
+                placeholder="0"
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
+              />
+            </div>
+
+            <div className="mb-6">
+              <label className={labelClass} htmlFor="category">
+                Category
+              </label>
+              <select
+                id="category"
+                className={inputClass}
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+              >
+                <option value="Salary">Salary</option>
+                <option value="Food">Food</option>
+                <option value="Shopping">Shopping</option>
+                <option value="Transport">Transport</option>
+                <option value="Entertainment">Entertainment</option>
+                <option value="Others">Others</option>
+              </select>
+            </div>
+
+            <button
+              type="submit"
+              className="w-full rounded-lg bg-teal-900 py-3 text-sm font-semibold text-white transition-colors hover:bg-teal-800 focus:outline-none focus:ring-2 focus:ring-teal-700 focus:ring-offset-2"
+            >
+              Add transaction
+            </button>
+          </form>
+
+          {/* RIGHT: CHARTS + HISTORY */}
+          <div className="flex flex-col gap-6 lg:col-span-2">
+
+            <div className="grid gap-6 md:grid-cols-2">
+
+              {/* Pie Chart */}
+              <div className="rounded-2xl border border-stone-200 bg-white p-6">
+                <h2 className="mb-4 text-lg font-semibold text-stone-900">
+                  Expense by category
+                </h2>
+                {expenseChartData.length === 0 ? (
+                  <div className="flex h-65 items-center justify-center rounded-lg border border-dashed border-stone-300 px-4 text-center text-sm text-stone-400">
+                    Koi expense add karein, chart yahan nazar aayega.
+                  </div>
+                ) : (
+                  <ResponsiveContainer width="100%" height={260}>
+                    <PieChart>
+                      <Pie
+                        data={expenseChartData}
+                        dataKey="value"
+                        nameKey="name"
+                        outerRadius={90}
+                        label
+                      >
+                        {expenseChartData.map((entry, index) => (
+                          <Cell
+                            key={index}
+                            fill={COLORS[index % COLORS.length]}
+                          />
+                        ))}
+                      </Pie>
+                      <Tooltip
+                        contentStyle={{
+                          backgroundColor: "#ffffff",
+                          border: "1px solid #e7e5e4",
+                          borderRadius: "12px",
+                          padding: "12px",
+                          boxShadow: "0 10px 25px rgba(0,0,0,0.12)",
+                        }}
+                        itemStyle={{
+                          color: "#1c1917",
+                          fontWeight: "600",
+                          fontSize: "14px",
+                        }}
+                        labelStyle={{
+                          color: "#78716c",
+                          fontWeight: "700",
+                          marginBottom: "6px",
+                        }}
+                        formatter={(value) => [`Rs. ${value}`, "Amount"]}
+                      />
+                    </PieChart>
+                  </ResponsiveContainer>
+                )}
+              </div>
+
+              {/* Bar Chart */}
+              <div className="rounded-2xl border border-stone-200 bg-white p-6">
+                <h2 className="mb-4 text-lg font-semibold text-stone-900">
+                  Monthly income vs expense
+                </h2>
+                {monthlyData.length === 0 ? (
+                  <div className="flex h-[260px] items-center justify-center rounded-lg border border-dashed border-stone-300 px-4 text-center text-sm text-stone-400">
+                    Pehli transaction add karein, monthly chart ban jayega.
+                  </div>
+                ) : (
+                  <ResponsiveContainer width="100%" height={260}>
+                    <BarChart data={monthlyData}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#e7e5e4" />
+                      <XAxis dataKey="month" />
+                      <YAxis />
+                      <Tooltip />
+                      <Bar dataKey="income" fill="#0F766E" radius={[4, 4, 0, 0]} />
+                      <Bar dataKey="expense" fill="#BE123C" radius={[4, 4, 0, 0]} />
+                    </BarChart>
+                  </ResponsiveContainer>
+                )}
+              </div>
+            </div>
+
+            {/* HISTORY */}
+            <div className="rounded-2xl border border-stone-200 bg-white p-6">
+              <div className="mb-4 flex items-center justify-between gap-3">
+                <h2 className="text-lg font-semibold text-stone-900">History</h2>
+
+                <select
+                  aria-label="Filter by category"
+                  className="rounded-lg border border-stone-300 bg-white px-3 py-1.5 text-sm text-stone-700 focus:border-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-700/20"
+                  value={filterCategory}
+                  onChange={(e) => setFilterCategory(e.target.value)}
+                >
+                  <option value="All">All categories</option>
+                  <option value="Salary">Salary</option>
+                  <option value="Food">Food</option>
+                  <option value="Shopping">Shopping</option>
+                  <option value="Transport">Transport</option>
+                  <option value="Entertainment">Entertainment</option>
+                  <option value="Others">Others</option>
+                </select>
+              </div>
+
+              {displayedTransactions.length === 0 ? (
+                <p className="rounded-lg border border-dashed border-stone-300 py-8 text-center text-sm text-stone-400">
+                  {filterCategory === "All"
+                    ? "Abhi koi transaction nahi hai. Left side se pehli add karein."
+                    : `"${filterCategory}" category mein koi transaction nahi hai.`}
+                </p>
+              ) : (
+                <ul className="divide-y divide-stone-200">
+                  {displayedTransactions.map((t) => (
+                    <li
+                      key={t.id}
+                      className="flex items-center justify-between gap-3 py-3"
+                    >
+                      <div className="flex min-w-0 items-center gap-3">
+                        <span
+                          className={`h-9 w-1.5 shrink-0 rounded-full ${t.type === "income" ? "bg-teal-600" : "bg-rose-600"
+                            }`}
+                        />
+                        <div className="min-w-0">
+                          <p className="truncate font-semibold text-stone-900">
+                            {t.title}
+                          </p>
+                          <p className="text-xs text-stone-500">
+                            {t.category} • {new Date(t.id).toLocaleDateString()}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="flex shrink-0 items-center gap-3">
+                        <span
+                          className={`font-semibold tabular-nums ${t.type === "income" ? "text-teal-700" : "text-rose-700"
+                            }`}
+                        >
+                          {t.type === "income" ? "+" : "-"} Rs. {t.amount}
+                        </span>
+
+                        <button
+                          onClick={() => handleDelete(t.id)}
+                          aria-label={`Delete ${t.title}`}
+                          className="rounded-md border border-stone-200 px-2.5 py-1 text-xs font-medium text-stone-500 transition-colors hover:border-rose-300 hover:bg-rose-50 hover:text-rose-700 focus:outline-none focus:ring-2 focus:ring-rose-500/40"
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
 }
 
 export default App;
-
-
