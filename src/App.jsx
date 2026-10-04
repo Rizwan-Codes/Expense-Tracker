@@ -148,7 +148,7 @@ function App() {
             Expense Tracker
           </h1>
           <p className="mt-1 text-sm text-stone-500">
-            Apni income aur kharchay ek jagah track karein.
+            Keep your income and expenses in one place.
           </p>
         </header>
 
@@ -289,7 +289,7 @@ function App() {
                 </h2>
                 {expenseChartData.length === 0 ? (
                   <div className="flex h-65 items-center justify-center rounded-lg border border-dashed border-stone-300 px-4 text-center text-sm text-stone-400">
-                    Koi expense add karein, chart yahan nazar aayega.
+                    Select any option, and the chart will appear here.
                   </div>
                 ) : (
                   <ResponsiveContainer width="100%" height={260}>
@@ -339,8 +339,8 @@ function App() {
                   Monthly income vs expense
                 </h2>
                 {monthlyData.length === 0 ? (
-                  <div className="flex h-[260px] items-center justify-center rounded-lg border border-dashed border-stone-300 px-4 text-center text-sm text-stone-400">
-                    Pehli transaction add karein, monthly chart ban jayega.
+                  <div className="flex h-65 items-center justify-center rounded-lg border border-dashed border-stone-300 px-4 text-center text-sm text-stone-400">
+                    Perform the first transaction, and the monthly chart will be generated.
                   </div>
                 ) : (
                   <ResponsiveContainer width="100%" height={260}>
@@ -381,8 +381,8 @@ function App() {
               {displayedTransactions.length === 0 ? (
                 <p className="rounded-lg border border-dashed border-stone-300 py-8 text-center text-sm text-stone-400">
                   {filterCategory === "All"
-                    ? "Abhi koi transaction nahi hai. Left side se pehli add karein."
-                    : `"${filterCategory}" category mein koi transaction nahi hai.`}
+                    ? "There are no transactions yet. Select the first option from the left side."
+                    : `"${filterCategory}"There are no transactions in the category.`}
                 </p>
               ) : (
                 <ul className="divide-y divide-stone-200">
